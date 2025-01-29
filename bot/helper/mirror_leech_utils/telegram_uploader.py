@@ -563,7 +563,8 @@ class TelegramUploader:
                         self._sent_msg.chat.id,
                         self._sent_msg.id,
                     )
-                    await msg.copy(target)
+                    if msg.video:
+                        await msg.copy(target)
                     return
                 except Exception as e:
                     LOGGER.error(f"Attempt {attempt + 1} failed: {e} {msg.id}")
