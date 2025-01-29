@@ -626,6 +626,8 @@ class TaskConfig:
                     if file.endswith(('.mkv', '.srt')):
                         file_path = os.path.join(root, file)
                         matching_files.append(f"file '{file_path}'\n")
+                        
+                matching_files.sort()
             
             if matching_files:
                 async with aiofiles.open(input_file_path, 'w', encoding='utf-8') as f:
