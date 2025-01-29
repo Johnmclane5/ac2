@@ -1,5 +1,7 @@
 import contextlib
 import os
+import aiofiles
+import asyncio
 from asyncio import gather, sleep
 from os import path as ospath
 from os import walk
@@ -614,11 +616,32 @@ class TaskConfig:
         return t_path if self.is_file and code == 0 else dl_path
 
     async def proceed_ffmpeg(self, dl_path, gid):
+
+        async def create_input_file(dl_path):
+            input_file_path = os.path.join(dl_path, "input.txt")
+            matching_files = []
+            
+            for root, _, files in await asyncio.to_thread(os.walk, dl_path):
+                for file in files:
+                    if file.endswith(('.mkv', '.srt')):
+                        file_path = os.path.join(root, file)
+                        matching_files.append(f"file '{file_path}'\n")
+            
+            if matching_files:
+                async with aiofiles.open(input_file_path, 'w', encoding='utf-8') as f:
+                    await f.writelines(matching_files)
+            return input_file_path
+        
         checked = False
         cmds = [
             [part.strip() for part in split(item) if part.strip()]
             for item in self.ffmpeg_cmds
         ]
+
+        # Create input.txt file
+        input_file_path = await create_input_file(dl_path)
+        LOGGER.info(f"Created input file: {input_file_path}")
+
         try:
             ffmpeg = FFMpeg(self)
             for ffmpeg_cmd in cmds:
