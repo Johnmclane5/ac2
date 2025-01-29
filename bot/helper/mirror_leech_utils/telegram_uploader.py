@@ -420,7 +420,10 @@ class TelegramUploader:
             ):
                 key = "documents"
                 if is_video and thumb is None:
-                    thumb = await get_video_thumbnail(self._up_path, None)
+                    if tmdb_poster_url:
+                        thumb = await self.get_custom_thumb(tmdb_poster_url)
+                    else:
+                        thumb = await get_video_thumbnail(self._up_path, None)
 
                 if self._listener.is_cancelled:
                     return None
