@@ -33,7 +33,6 @@ class MirrorStatus:
     STATUS_WATERMARK = "Watermark"
     STATUS_ETHUMB = "Embed Thumb"
 
-
 STATUSES = {
     "ALL": "All",
     "DL": MirrorStatus.STATUS_DOWNLOAD,

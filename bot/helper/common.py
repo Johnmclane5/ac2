@@ -1293,7 +1293,6 @@ class TaskConfig:
             ffmpeg = FFMpeg(self)
             if self.is_cancelled:
                 return False
-            self.proceed_count += 1
             if not checked:
                 checked = True
                 async with task_dict_lock:
