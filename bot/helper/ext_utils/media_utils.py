@@ -851,10 +851,12 @@ class FFMpeg:
         for file in mkv_files:
             try:
                 os.remove(file)  # Deletes the file
-                os.remove(mp4_file[0])
             except Exception as e:
                 LOGGER.info(f"Error deleting {file}: {e}")
-        
+                
+        if mp4_file:
+            os.remove(mp4_file[0])
+ 
         if self._listener.is_cancelled:
             return False
         if code == 0:
