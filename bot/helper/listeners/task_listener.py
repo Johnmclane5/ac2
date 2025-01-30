@@ -245,7 +245,7 @@ class TaskListener(TaskConfig):
 
         if self.merge:
             output_name = self.merge
-            up_path = await self.proceed_ffmpeg(
+            up_path = await self.proceed_merge(
                 up_path,
                 gid,
                 output_name
