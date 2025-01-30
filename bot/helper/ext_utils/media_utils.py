@@ -1,3 +1,4 @@
+import os
 import contextlib
 from asyncio import create_subprocess_exec, gather, sleep, wait_for
 from asyncio.subprocess import PIPE
@@ -770,3 +771,69 @@ class FFMpeg:
             i += 1
 
         return True
+
+    async def merge_videos(self, folder_path, output_path):
+        self.clear()
+
+        self._total_time = 0
+
+        # Collect all video files in the folder
+        video_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.mp4', '.mkv', '.avi'))]
+        
+        # Ensure there are video files to merge
+        if not video_files:
+            LOGGER.error(f"No video files found in the folder: {folder_path}")
+            return False
+        
+        # Create a temporary text file for ffmpeg to read the list of video files
+        with open(os.path.join(folder_path, 'filelist.txt'), 'w') as filelist:
+            for video in video_files:
+                filelist.write(f"file '{video}'\n")
+        
+        # Construct the ffmpeg command to concatenate videos
+        cmd = [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel", "error",
+            "-f", "concat",
+            "-safe", "0",
+            "-i", os.path.join(folder_path, 'filelist.txt'),
+            "-c", "copy",
+            '-map', '0:v',  
+            '-map', '0:a',
+            '-map', '0:s',
+            output_path
+        ]
+        
+        if self._listener.is_cancelled:
+            return False
+        
+        # Execute the ffmpeg command
+        self._listener.subproc = await create_subprocess_exec(
+            *cmd,
+            stdout=PIPE,
+            stderr=PIPE,
+        )
+        
+        await self._ffmpeg_progress()
+        _, stderr = await self._listener.subproc.communicate()
+        code = self._listener.subproc.returncode
+        
+        # Clean up the temporary file list
+        os.remove(os.path.join(folder_path, 'filelist.txt'))
+        
+        if self._listener.is_cancelled:
+            return False
+        if code == 0:
+            return output_path
+        if code == -9:
+            self._listener.is_cancelled = True
+            return False
+        
+        try:
+            stderr = stderr.decode().strip()
+        except Exception:
+            stderr = "Unable to decode the error!"
+        
+        LOGGER.error(f"{stderr}. Something went wrong while merging videos. Folder: {folder_path}")
+        return False

@@ -80,6 +80,7 @@ class TaskConfig:
         self.rc_flags = ""
         self.tag = ""
         self.name = ""
+        self.merge = ""
         self.subname = ""
         self.name_sub = ""
         self.metadata = ""
@@ -1284,3 +1285,32 @@ class TaskConfig:
         if checked:
             cpu_eater_lock.release()
         return dl_path
+
+    async def proceed_merge(self, dl_path, gid, output_name):  
+        checked = False
+        output_path = ospath.join(dl_path, output_name)
+        try:
+            ffmpeg = FFMpeg(self)
+            if self.is_cancelled:
+                return False
+            self.proceed_count += 1
+            if not checked:
+                checked = True
+                async with task_dict_lock:
+                    task_dict[self.mid] = FFmpegStatus(
+                     self,
+                        ffmpeg,
+                        gid,
+                        "FFmpeg",
+                    )
+                self.progress = False
+                await cpu_eater_lock.acquire()
+                self.progress = True
+            LOGGER.info(f"Running ffmpeg cmd for: {dl_path}")
+            self.subsize = await get_path_size(dl_path)
+            self.subname = output_name
+            await ffmpeg.ffmpeg_cmds(dl_path, output_path)
+        finally:
+            if checked:
+                    cpu_eater_lock.release()
+                    return output_path
