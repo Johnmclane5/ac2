@@ -782,11 +782,14 @@ class FFMpeg:
         for root, _, files in os.walk(folder_path):
             for f in files:
                 if f.endswith(('.mp4', '.mkv', '.avi')):
-                    video_files.append(os.path.join(root, f))        
+                    video_files.append(os.path.join(root, f)) 
+
         # Ensure there are video files to merge
         if not video_files:
             LOGGER.error(f"No video files found in the folder: {folder_path}")
             return False
+        
+        video_files.sort()
         
         # Create a temporary text file for ffmpeg to read the list of video files
         with open(os.path.join(folder_path, 'filelist.txt'), 'w') as filelist:
@@ -824,6 +827,12 @@ class FFMpeg:
         
         # Clean up the temporary file list
         os.remove(os.path.join(folder_path, 'filelist.txt'))
+        for file in video_files:
+            try:
+                os.remove(file)  # Deletes the file
+                print(f"Deleted: {file}")
+            except Exception as e:
+                print(f"Error deleting {file}: {e}")
         
         if self._listener.is_cancelled:
             return False
