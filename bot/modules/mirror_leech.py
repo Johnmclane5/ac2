@@ -122,7 +122,7 @@ class Mirror(TaskListener):
         self.select = args["-s"]
         self.seed = args["-d"]
         self.name = args["-n"]
-        self.name = args["-mv"]
+        self.merge = args["-mv"]
         self.up_dest = args["-up"]
         self.rc_flags = args["-rcf"]
         self.link = args["link"]
