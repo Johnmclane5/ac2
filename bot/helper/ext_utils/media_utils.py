@@ -778,8 +778,11 @@ class FFMpeg:
         self._total_time = 0
 
         # Collect all video files in the folder
-        video_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.mp4', '.mkv', '.avi'))]
-        
+        video_files = []
+        for root, _, files in os.walk(folder_path):
+            for f in files:
+                if f.endswith(('.mp4', '.mkv', '.avi')):
+                    video_files.append(os.path.join(root, f))        
         # Ensure there are video files to merge
         if not video_files:
             LOGGER.error(f"No video files found in the folder: {folder_path}")
