@@ -1309,7 +1309,7 @@ class TaskConfig:
             LOGGER.info(f"Running ffmpeg cmd for: {dl_path}")
             self.subsize = await get_path_size(dl_path)
             self.subname = output_name
-            await ffmpeg.ffmpeg_cmds(dl_path, output_path)
+            await ffmpeg.merge_videos(dl_path, output_path)
         finally:
             if checked:
                     cpu_eater_lock.release()
