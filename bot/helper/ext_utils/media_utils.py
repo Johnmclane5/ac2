@@ -791,17 +791,16 @@ class FFMpeg:
                     srt_file.append(os.path.join(root, f)) 
 
         # Ensure there are video files to merge
-        if not mkv_files or mp4_file:
+        if not mkv_files and not mp4_file:
             LOGGER.error(f"No video files found in the folder: {folder_path}")
             return False
-        
-        mkv_files.sort()
-        
-        # Create a temporary text file for ffmpeg to read the list of video files
-        with open(os.path.join(folder_path, 'filelist.txt'), 'w') as filelist:
-            for video in mkv_files:
-                filelist.write(f"file '{video}'\n")
         if mkv_files:
+            mkv_files.sort()
+            # Create a temporary text file for ffmpeg to read the list of video files
+            with open(os.path.join(folder_path, 'filelist.txt'), 'w') as filelist:
+                for video in mkv_files:
+                    filelist.write(f"file '{video}'\n")
+
             # Construct the ffmpeg command to concatenate videos
             cmd = [
                 "ffmpeg",
@@ -816,13 +815,14 @@ class FFMpeg:
                 '-map', '0:s',
                 output_path
             ]
+
         if mp4_file:
             cmd = [
                 "ffmpeg",
                 "-hide_banner",
                 "-loglevel", "error",
                 '-i', mp4_file[0],
-                '-i', srt_file[0],  # Include the SRT subtitle file
+                '-i', srt_file[0],  
                 '-c:v', 'copy',  
                 '-c:a', 'copy',  
                 '-c:s', 'mov_text',  
@@ -831,7 +831,8 @@ class FFMpeg:
                 '-map', '1',  
                 output_path
             ]
-
+            LOGGER.info(f"{cmd}")
+            
         if self._listener.is_cancelled:
             return False
         
