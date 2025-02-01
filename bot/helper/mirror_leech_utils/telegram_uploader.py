@@ -49,6 +49,7 @@ from bot.helper.ext_utils.media_utils import (
     get_video_thumbnail,
 )
 from bot.helper.telegram_helper.message_utils import delete_message
+from bot.helper.telegram_helper.button_build import ButtonMaker
 
 LOGGER = getLogger(__name__)
 
@@ -403,8 +404,8 @@ class TelegramUploader:
         try:
             is_video, is_audio, is_image = await get_document_type(self._up_path)
 
-            movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
-            tmdb_poster_url = await get_by_name(movie_name, release_year)
+            #movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
+            #tmdb_poster_url = await get_by_name(movie_name, release_year)
 
             if not is_image and thumb is None:
                 file_name = ospath.splitext(file)[0]
@@ -421,10 +422,7 @@ class TelegramUploader:
             ):
                 key = "documents"
                 if is_video and thumb is None:
-                    if tmdb_poster_url:
-                        thumb = await self.get_custom_thumb(tmdb_poster_url)
-                    else:
-                        thumb = await get_video_thumbnail(self._up_path, None)
+                    thumb = await get_video_thumbnail(self._up_path, None)
 
                 if self._listener.is_cancelled:
                     return None
@@ -452,9 +450,9 @@ class TelegramUploader:
                         self._listener.thumbnail_layout,
                         self._listener.screen_shots,
                     )
-                if tmdb_poster_url and thumb is None:
-                     thumb =  await self.get_custom_thumb(tmdb_poster_url)
-                     LOGGER.info("Got the poster")
+                #if tmdb_poster_url and thumb is None:
+                     #thumb =  await self.get_custom_thumb(tmdb_poster_url)
+                     #LOGGER.info("Got the poster")
                 if thumb is None:
                     thumb = await get_video_thumbnail(self._up_path, duration)
                 if thumb is not None and thumb != "none":
