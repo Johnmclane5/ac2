@@ -54,7 +54,7 @@ LOGGER = getLogger(__name__)
 
 
 class TelegramUploader:
-    def __init__(self, listener, path):
+    def __init__(self, listener, path, source_link):
         self._last_uploaded = 0
         self._processed_bytes = 0
         self._listener = listener
@@ -430,6 +430,9 @@ class TelegramUploader:
                     return None
                 if thumb == "none":
                     thumb = None
+                buttons = ButtonMaker()
+                buttons.url_button("☁️ Cloud Link", source_link)
+                button = buttons.build_menu(2)
                 self._sent_msg = await self._sent_msg.reply_document(
                     document=self._up_path,
                     quote=True,
@@ -437,6 +440,7 @@ class TelegramUploader:
                     caption=cap_mono,
                     force_document=True,
                     disable_notification=True,
+                    reply_markup=button,
                     progress=self._upload_progress,
                 )
             elif is_video:
