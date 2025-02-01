@@ -426,7 +426,7 @@ class TelegramUploader:
                         thumb = await self.get_custom_thumb(tmdb_poster_url)
                         LOGGER.info("Got the poster")
                     else:
-                        thumb = await get_video_thumbnail(self._up_path, None)
+                        thumb = await self.get_custom_thumb("https://i.ibb.co/XrwTk5zb/c95d6b27-8db7-426e-891e-9371632a61c1.webp")
 
                 if self._listener.is_cancelled:
                     return None
