@@ -429,7 +429,7 @@ class TelegramUploader:
                 if thumb == "none":
                     thumb = None
                 buttons = ButtonMaker()
-                buttons.url_button("☁️ Cloud Link", self.source_link)
+                buttons.url_button("⚡ Index Link", self.source_link)
                 button = buttons.build_menu(2)
                 LOGGER.info(f"{self.source_link}")
                 self._sent_msg = await self._sent_msg.reply_document(
