@@ -78,7 +78,7 @@ class TelegramUploader:
         self._sent_msg = None
         self._user_session = self._listener.user_transmission
         self._error = ""
-
+        self.source_link = source_link
     async def get_custom_thumb(self, thumb):
         photo_dir = await download_image_url(thumb)
     
@@ -429,7 +429,7 @@ class TelegramUploader:
                 if thumb == "none":
                     thumb = None
                 buttons = ButtonMaker()
-                buttons.url_button("☁️ Cloud Link", source_link)
+                buttons.url_button("☁️ Cloud Link", self.source_link)
                 button = buttons.build_menu(2)
                 self._sent_msg = await self._sent_msg.reply_document(
                     document=self._up_path,
