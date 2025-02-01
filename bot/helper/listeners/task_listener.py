@@ -30,7 +30,7 @@ from bot.helper.ext_utils.files_utils import (
     get_path_size,
     join_files,
 )
-from bot.helper.ext_utils.links_utils import is_gdrive_id
+from bot.helper.ext_utils.links_utils import is_gdrive_id, is_url, is_magnet
 from bot.helper.ext_utils.status_utils import get_readable_file_size
 from bot.helper.ext_utils.task_manager import check_running_tasks, start_from_queued
 from bot.helper.mirror_leech_utils.gdrive_utils.upload import GoogleDriveUpload
@@ -354,7 +354,9 @@ class TaskListener(TaskConfig):
 
         if self.is_leech:
             LOGGER.info(f"Leech Name: {self.name}")
-            tg = TelegramUploader(self, up_dir)
+            if is_url(self.link) or is_url(self.link):
+                source_link = self.link
+            tg = TelegramUploader(self, up_dir, source_link)
             async with task_dict_lock:
                 task_dict[self.mid] = TelegramStatus(self, tg, gid, "up")
             await gather(
