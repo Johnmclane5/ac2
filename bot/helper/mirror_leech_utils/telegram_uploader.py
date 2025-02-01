@@ -431,6 +431,7 @@ class TelegramUploader:
                 buttons = ButtonMaker()
                 buttons.url_button("☁️ Cloud Link", self.source_link)
                 button = buttons.build_menu(2)
+                LOGGER.info(f"{self.source_link}")
                 self._sent_msg = await self._sent_msg.reply_document(
                     document=self._up_path,
                     quote=True,
@@ -569,7 +570,7 @@ class TelegramUploader:
                         self._sent_msg.chat.id,
                         self._sent_msg.id,
                     )
-                    if msg.video:
+                    if msg:
                         await msg.copy(target)
                     return
                 except Exception as e:
