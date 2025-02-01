@@ -82,12 +82,9 @@ async def get_by_name(movie_name, release_year):
  
 
                         # Use the backdrop_path or poster_path
-                            poster_path = None
-                            if 'backdrops' in movie_images and movie_images['backdrops']:
-                                poster_path = movie_images['backdrops'][0]['file_path']
-                                                        
-                            elif 'backdrop_path' in result and result['backdrop_path']:
-                                poster_path = result['backdrop_path']
+                            poster_path = None                            
+                            if 'poster_path' in result and result['poster_path']:
+                                poster_path = result['poster_path']
                             poster_url = f"https://image.tmdb.org/t/p/original{poster_path}"
                             return poster_url
     except Exception as e:
