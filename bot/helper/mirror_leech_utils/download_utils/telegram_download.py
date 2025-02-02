@@ -91,7 +91,7 @@ class TelegramDownloadHelper:
         elif not self._listener.is_cancelled:
             await self._on_download_error("Internal error occurred")
 
-    async def add_download(self, message, path, session):
+    async def add_download(self, message, path, filename, session):
         self.session = session
         message = await self.session.get_messages(
             chat_id=message.chat.id,
@@ -120,6 +120,7 @@ class TelegramDownloadHelper:
                         media.file_name if hasattr(media, "file_name") else "None"
                     )
                 else:
+                    self._listener.name = filename
                     path = path + self._listener.name
                 self._listener.size = media.file_size
                 gid = media.file_unique_id
