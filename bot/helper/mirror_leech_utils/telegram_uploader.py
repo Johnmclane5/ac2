@@ -434,9 +434,12 @@ class TelegramUploader:
                 if thumb == "none":
                     thumb = None
                 buttons = ButtonMaker()
-                encoded_url = quote(self.source_link, safe=":/")
-                buttons.url_button("⚡ Direct Link", encoded_url)
-                button = buttons.build_menu(2)
+                if self.source_link:
+                    encoded_url = quote(self.source_link, safe=":/")
+                    buttons.url_button("⚡ Direct Link", encoded_url)
+                    button = buttons.build_menu(2)
+                else:
+                    button = None
                 LOGGER.info(f"{self.source_link}")
                 self._sent_msg = await self._sent_msg.reply_document(
                     document=self._up_path,
