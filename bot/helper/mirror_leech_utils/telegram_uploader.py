@@ -440,16 +440,17 @@ class TelegramUploader:
                     button = buttons.build_menu(2)
                 else:
                     button = None
-                self._sent_msg = await self._sent_msg.reply_document(
-                    document=self._up_path,
-                    quote=True,
-                    thumb=thumb,
-                    caption=cap_mono,
-                    force_document=True,
-                    disable_notification=True,
-                    reply_markup=button,
-                    progress=self._upload_progress,
-                )
+                if self._user_session or self._listener.client:
+                    self._sent_msg = await self._sent_msg.reply_document(
+                        document=self._up_path,
+                        quote=True,
+                        thumb=thumb,
+                        caption=cap_mono,
+                        force_document=True,
+                        disable_notification=True,
+                        reply_markup=button,
+                        progress=self._upload_progress,
+                    )
             elif is_video:
                 key = "videos"
                 duration = (await get_media_info(self._up_path))[0]
