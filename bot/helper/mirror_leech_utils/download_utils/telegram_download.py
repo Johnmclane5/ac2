@@ -115,7 +115,7 @@ class TelegramDownloadHelper:
                 download = media.file_unique_id not in GLOBAL_GID
 
             if download:
-                if self._listener.name == "":
+                if name == "":
                     self._listener.name = (
                         media.file_name if hasattr(media, "file_name") else "None"
                     )
