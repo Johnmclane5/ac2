@@ -433,24 +433,16 @@ class TelegramUploader:
                     return None
                 if thumb == "none":
                     thumb = None
-                buttons = ButtonMaker()
-                if self.source_link:
-                    encoded_url = quote(self.source_link, safe=":/")
-                    buttons.url_button("⚡ Direct Link", encoded_url)
-                    button = buttons.build_menu(2)
-                else:
-                    button = None
-                if self._user_session or self._listener.client:
-                    self._sent_msg = await self._sent_msg.reply_document(
-                        document=self._up_path,
-                        quote=True,
-                        thumb=thumb,
-                        caption=cap_mono,
-                        force_document=True,
-                        disable_notification=True,
-                        reply_markup=button,
-                        progress=self._upload_progress,
-                    )
+                self._sent_msg = await self._sent_msg.reply_document(
+                    document=self._up_path,
+                    quote=True,
+                    thumb=thumb,
+                    caption=cap_mono,
+                    force_document=True,
+                    disable_notification=True,
+                    reply_markup=button,
+                    progress=self._upload_progress,
+                )
             elif is_video:
                 key = "videos"
                 duration = (await get_media_info(self._up_path))[0]
@@ -514,9 +506,16 @@ class TelegramUploader:
                     disable_notification=True,
                     progress=self._upload_progress,
                 )
-
-            await self._copy_message()
-
+                
+            buttons = ButtonMaker()
+            if self.source_link:
+                encoded_url = quote(self.source_link, safe=":/")
+                buttons.url_button("⚡ Direct Link", encoded_url)
+                button = buttons.build_menu(2)
+            else:
+                button = None
+            await self._copy_message(button=button)
+            
             if (
                 not self._listener.is_cancelled
                 and self._media_group
@@ -569,7 +568,7 @@ class TelegramUploader:
                 return await self._upload_file(cap_mono, file, o_path, True)
             raise err
 
-    async def _copy_message(self):
+    async def _copy_message(self,  button=None):
         await sleep(1)
 
         async def _copy(target, retries=3):
@@ -580,7 +579,7 @@ class TelegramUploader:
                         self._sent_msg.id,
                     )
                     if msg:
-                        await msg.copy(target)
+                        await msg.copy(target, reply_markup=button)
                     return
                 except Exception as e:
                     LOGGER.error(f"Attempt {attempt + 1} failed: {e} {msg.id}")
