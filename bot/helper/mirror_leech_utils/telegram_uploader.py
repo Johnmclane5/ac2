@@ -440,7 +440,6 @@ class TelegramUploader:
                     button = buttons.build_menu(2)
                 else:
                     button = None
-                LOGGER.info(f"{self.source_link}")
                 self._sent_msg = await self._sent_msg.reply_document(
                     document=self._up_path,
                     quote=True,
