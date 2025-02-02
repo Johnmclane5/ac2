@@ -50,6 +50,7 @@ from bot.helper.ext_utils.media_utils import (
 )
 from bot.helper.telegram_helper.message_utils import delete_message
 from bot.helper.telegram_helper.button_build import ButtonMaker
+from urllib.parse import quote
 
 LOGGER = getLogger(__name__)
 
@@ -433,7 +434,8 @@ class TelegramUploader:
                 if thumb == "none":
                     thumb = None
                 buttons = ButtonMaker()
-                buttons.url_button("⚡ Direct Link", self.source_link)
+                encoded_url = quote(self.source_link, safe=":/")
+                buttons.url_button("⚡ Direct Link", encoded_url)
                 button = buttons.build_menu(2)
                 LOGGER.info(f"{self.source_link}")
                 self._sent_msg = await self._sent_msg.reply_document(
