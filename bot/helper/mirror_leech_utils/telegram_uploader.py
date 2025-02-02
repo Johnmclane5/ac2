@@ -34,7 +34,7 @@ from tenacity import (
 
 from bot.core.aeon_client import TgClient
 from bot.core.config_manager import Config
-from bot.helper.aeon_utils.poster_gen import get_by_name, extract_movie_info, download_image_url
+from bot.helper.aeon_utils.poster_gen import get_movie_poster, extract_movie_info, download_image_url
 from bot.helper.aeon_utils.caption_gen import generate_caption
 from bot.helper.ext_utils.bot_utils import sync_to_async
 from bot.helper.ext_utils.files_utils import (
@@ -406,7 +406,7 @@ class TelegramUploader:
             is_video, is_audio, is_image = await get_document_type(self._up_path)
 
             movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
-            tmdb_poster_url = await get_by_name(movie_name, release_year)
+            tmdb_poster_url = await get_movie_poster(movie_name, release_year)
 
             if not is_image and thumb is None:
                 file_name = ospath.splitext(file)[0]
