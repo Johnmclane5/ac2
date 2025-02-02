@@ -440,7 +440,6 @@ class TelegramUploader:
                     caption=cap_mono,
                     force_document=True,
                     disable_notification=True,
-                    reply_markup=button,
                     progress=self._upload_progress,
                 )
             elif is_video:
