@@ -356,6 +356,8 @@ class TaskListener(TaskConfig):
             LOGGER.info(f"Leech Name: {self.name}")
             if is_url(self.link):
                 source_link = self.link
+            else:
+                source_link = None
             tg = TelegramUploader(self, up_dir, source_link)
             async with task_dict_lock:
                 task_dict[self.mid] = TelegramStatus(self, tg, gid, "up")
