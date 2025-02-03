@@ -83,8 +83,8 @@ async def edit_message(
     markdown=False,
     block=True,
 ):
-    #if markdown:
-        #text = markdown2.markdown(text)
+    if markdown:
+        text = markdown2.markdown(text)
 
     parse_mode = enums.ParseMode.MARKDOWN if markdown else enums.ParseMode.HTML
     try:
@@ -92,8 +92,7 @@ async def edit_message(
             if photo:
                 return await message.edit_media(
                     InputMediaPhoto(photo, text),
-                    reply_markup=buttons,
-                    parse_mode=parse_mode,
+                    reply_markup=buttons
                 )
             return await message.edit_caption(
                 caption=text,
@@ -103,8 +102,7 @@ async def edit_message(
         await message.edit(
             text=text,
             disable_web_page_preview=True,
-            reply_markup=buttons,
-            parse_mode=parse_mode,
+            reply_markup=buttons
         )
     except FloodWait as f:
         LOGGER.warning(str(f))
