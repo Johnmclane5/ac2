@@ -26,7 +26,7 @@ class TgClient:
             Config.TELEGRAM_API,
             Config.TELEGRAM_HASH,
             bot_token=Config.BOT_TOKEN,
-            parse_mode=enums.ParseMode.HTMl
+            parse_mode=enums.ParseMode.HTML
         )
         await cls.bot.start()
         cls.NAME = cls.bot.me.username
