@@ -92,11 +92,13 @@ async def edit_message(
             if photo:
                 return await message.edit_media(
                     InputMediaPhoto(photo, text),
-                    reply_markup=buttons
+                    reply_markup=buttons,
+                    parse_mode=parse_mode,
                 )
             return await message.edit_caption(
                 caption=text,
-                reply_markup=buttons
+                reply_markup=buttons,
+                parse_mode=parse_mode,
             )
         await message.edit(
             text=text,
