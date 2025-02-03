@@ -97,12 +97,12 @@ async def edit_message(
             return await message.edit_caption(
                 caption=text,
                 reply_markup=buttons,
-                parse_mode=parse_mode,
             )
         await message.edit(
             text=text,
             disable_web_page_preview=True,
-            reply_markup=buttons
+            reply_markup=buttons,
+            parse_mode=parse_mode
         )
     except FloodWait as f:
         LOGGER.warning(str(f))
