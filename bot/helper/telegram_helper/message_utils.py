@@ -83,8 +83,8 @@ async def edit_message(
     markdown=False,
     block=True,
 ):
-    #if markdown:
-        #text = markdown2.markdown(text)
+    if markdown:
+        text = markdown2.markdown(text)
 
     parse_mode = enums.ParseMode.MARKDOWN if markdown else enums.ParseMode.HTML
     try:
@@ -93,12 +93,10 @@ async def edit_message(
                 return await message.edit_media(
                     InputMediaPhoto(photo, text),
                     reply_markup=buttons,
-                    parse_mode=parse_mode
                 )
             return await message.edit_caption(
                 caption=text,
                 reply_markup=buttons,
-                parse_mode=parse_mode
             )
         await message.edit(
             text=text,
