@@ -83,8 +83,8 @@ async def edit_message(
     markdown=False,
     block=True,
 ):
-    if markdown:
-        text = markdown2.markdown(text)
+    #if markdown:
+        #text = markdown2.markdown(text)
 
     parse_mode = enums.ParseMode.MARKDOWN if markdown else enums.ParseMode.HTML
     try:
