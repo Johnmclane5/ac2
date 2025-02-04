@@ -405,8 +405,8 @@ class TelegramUploader:
         try:
             is_video, is_audio, is_image = await get_document_type(self._up_path)
 
-            #movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
-            #tmdb_poster_url = await get_movie_poster(movie_name, release_year)
+            movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
+            tmdb_poster_url = await get_movie_poster(movie_name, release_year)
 
             if not is_image and thumb is None:
                 file_name = ospath.splitext(file)[0]
@@ -447,9 +447,9 @@ class TelegramUploader:
                         self._listener.thumbnail_layout,
                         self._listener.screen_shots,
                     )
-                #if tmdb_poster_url and thumb is None:
-                     #thumb =  await self.get_custom_thumb(tmdb_poster_url)
-                     #LOGGER.info("Got the poster")
+                if tmdb_poster_url and thumb is None:
+                     thumb =  await self.get_custom_thumb(tmdb_poster_url)
+                     LOGGER.info("Got the poster")
                 if thumb is None:
                     thumb = await get_video_thumbnail(self._up_path, duration)
                 if thumb is not None and thumb != "none":
@@ -502,14 +502,14 @@ class TelegramUploader:
                     progress=self._upload_progress,
                 )
                 
-            buttons = ButtonMaker()
-            if self.source_link:
-                encoded_url = quote(self.source_link, safe=":/")
-                buttons.url_button("⚡ Direct Link", encoded_url)
-                button = buttons.build_menu(2)
-            else:
-                button = None
-            await self._copy_message(button=button)
+            #buttons = ButtonMaker()
+            #if self.source_link:
+                #encoded_url = quote(self.source_link, safe=":/")
+                #buttons.url_button("⚡ Direct Link", encoded_url)
+                #button = buttons.build_menu(2)
+            #else:
+                #button = None
+            await self._copy_message()
             
             if (
                 not self._listener.is_cancelled
@@ -563,7 +563,7 @@ class TelegramUploader:
                 return await self._upload_file(cap_mono, file, o_path, True)
             raise err
 
-    async def _copy_message(self,  button=None):
+    async def _copy_message(self):
         await sleep(1)
 
         async def _copy(target, retries=3):
@@ -574,7 +574,7 @@ class TelegramUploader:
                         self._sent_msg.id,
                     )
                     if msg and msg.document and msg.document.mime_type.startswith('video/'):
-                        await msg.copy(target, reply_markup=button)
+                        await msg.copy(target)
                     return
                 except Exception as e:
                     LOGGER.error(f"Attempt {attempt + 1} failed: {e} {msg.id}")
