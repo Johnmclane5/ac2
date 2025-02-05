@@ -794,12 +794,31 @@ class FFMpeg:
         if not mkv_files and not mp4_file:
             LOGGER.error(f"No video files found in the folder: {folder_path}")
             return False
+            
+        cleaned_mkv_files = []
+
         if mkv_files:
-            mkv_files.sort()
-            # Create a temporary text file for ffmpeg to read the list of video files
-            with open(os.path.join(folder_path, 'filelist.txt'), 'w') as filelist:
-                for video in mkv_files:
-                    filelist.write(f"file '{video}'\n")
+            mkv_files.sort()  # Sort the files first
+    
+            for file_path in mkv_files:
+                directory, filename = os.path.split(file_path)
+                new_filename = filename.replace("'", "")  # Remove single quotes
+                new_file_path = os.path.join(directory, new_filename)
+
+                # Rename the file if necessary
+                if new_filename != filename:
+                    try:
+                        os.rename(file_path, new_file_path)
+                        LOGGER.info(f"Renamed: {file_path} -> {new_file_path}")
+                    except Exception as e:
+                        LOGGER.error(f"Failed to rename {file_path}: {e}")
+                        continue  # Skip if renaming fails
+
+                cleaned_mkv_files.append(new_file_path)  
+                # Create a temporary text file for ffmpeg to read the list of video files
+                with open(os.path.join(folder_path, 'filelist.txt'), 'w') as filelist:
+                    for video in cleaned_mkv_files:
+                        filelist.write(f"file '{video}'\n")
 
             # Construct the ffmpeg command to concatenate videos
             cmd = [
