@@ -469,7 +469,6 @@ class TelegramUploader:
                         chat_id=int(Config.SCREENSHOT_CHAT),
                         photo=ss_thumb,
                         caption=new_mono,
-                        disable_web_page_preview=True,
                         disable_notification=True,
                     )
                 self._sent_msg = await self._sent_msg.reply_video(
