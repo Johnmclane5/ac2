@@ -366,7 +366,7 @@ class Mirror(TaskListener):
                         return await five_minute_del(x)
 
         if file_ is not None:
-            msg_caption = f"{reply_to.caption if reply_to.caption else ""}"
+            msg_caption = f'{reply_to.caption if reply_to.caption else ""}'
             create_task(
                 TelegramDownloadHelper(self).add_download(
                     reply_to,
