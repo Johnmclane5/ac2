@@ -406,7 +406,10 @@ class TelegramUploader:
             is_video, is_audio, is_image = await get_document_type(self._up_path)
 
             movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
-            tmdb_poster_url = await get_movie_poster(movie_name, release_year)
+            if Config.TMDB_API_KEY:
+                tmdb_poster_url = await get_movie_poster(movie_name, release_year)
+            else:
+                tmdb_poster_url = None
 
             if not is_image and thumb is None:
                 file_name = ospath.splitext(file)[0]
@@ -463,14 +466,14 @@ class TelegramUploader:
                     return None
                 if thumb == "none":
                     thumb = None
-                    
-                new_mono = re_sub(r'\.mkv|\.mp4|\.webm', '', cap_mono)
-                await self._listener.client.send_photo(
-                        chat_id=int(Config.SCREENSHOT_CHAT),
-                        photo=ss_thumb,
-                        caption=new_mono,
-                        disable_notification=True,
-                    )
+                if Config.SCREENSHOT_CHAT:
+                    new_mono = re_sub(r'\.mkv|\.mp4|\.webm', '', cap_mono)
+                    await self._listener.client.send_photo(
+                            chat_id=int(Config.SCREENSHOT_CHAT),
+                            photo=ss_thumb,
+                            caption=new_mono,
+                            disable_notification=True,
+                        )
                 self._sent_msg = await self._sent_msg.reply_video(
                     video=self._up_path,
                     quote=True,
