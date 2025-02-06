@@ -22,6 +22,7 @@ class Config:
     INDEX_URL = ""
     IS_TEAM_DRIVE = False
     LEECH_DUMP_CHAT = ""
+    SCREENSHOT_CHAT = ""
     LEECH_FILENAME_PREFIX = ""
     LEECH_SPLIT_SIZE = 2097152000
     MEDIA_GROUP = False
