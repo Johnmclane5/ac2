@@ -441,12 +441,13 @@ class TelegramUploader:
             elif is_video:
                 key = "videos"
                 duration = (await get_media_info(self._up_path))[0]
-                if thumb is None and self._listener.thumbnail_layout:
-                    thumb = await get_multiple_frames_thumbnail(
+                if self._listener.thumbnail_layout:
+                    ss_thumb = await get_multiple_frames_thumbnail(
                         self._up_path,
                         self._listener.thumbnail_layout,
                         self._listener.screen_shots,
                     )
+                
                 if tmdb_poster_url and thumb is None:
                      thumb =  await self.get_custom_thumb(tmdb_poster_url)
                      LOGGER.info("Got the poster")
@@ -462,6 +463,15 @@ class TelegramUploader:
                     return None
                 if thumb == "none":
                     thumb = None
+                    
+                new_mono = re_sub(r'\.(mkv|mp4)$', '', cap_mono)
+                await self._listener.client.send_photo(
+                        chat_id=int(Config.SCREENSHOT_CHAT),
+                        photo=ss_thumb,
+                        caption=new_mono,
+                        disable_web_page_preview=True,
+                        disable_notification=True,
+                    )
                 self._sent_msg = await self._sent_msg.reply_video(
                     video=self._up_path,
                     quote=True,
