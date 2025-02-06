@@ -464,7 +464,7 @@ class TelegramUploader:
                 if thumb == "none":
                     thumb = None
                     
-                new_mono = re_sub(r'\.(mkv|mp4)$', '', cap_mono)
+                new_mono = re_sub(r'\.mkv|\.mp4|\.webm', '', cap_mono)
                 await self._listener.client.send_photo(
                         chat_id=int(Config.SCREENSHOT_CHAT),
                         photo=ss_thumb,
