@@ -207,6 +207,9 @@ async def get_video_thumbnail(video_file, duration):
     output = ospath.join(output_dir, f"{time()}.jpg")
     if duration is None:
         duration = (await get_media_info(video_file))[0]
+        
+    duration = min(duration, 60)
+    
     if duration == 0:
         duration = 3
     duration = duration // 2
