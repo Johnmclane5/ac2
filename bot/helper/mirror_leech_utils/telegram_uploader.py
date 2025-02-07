@@ -35,9 +35,9 @@ from tenacity import (
 
 from bot.core.aeon_client import TgClient
 from bot.core.config_manager import Config
-from bot.helper.aeon_utils.poster_gen import get_movie_poster, extract_movie_info, download_image_url
+from bot.helper.aeon_utils.poster_gen import get_movie_poster, extract_movie_info, download_image_url, humanbytes
 from bot.helper.aeon_utils.caption_gen import generate_caption
-from bot.helper.ext_utils.bot_utils import sync_to_async, get_size_bytes
+from bot.helper.ext_utils.bot_utils import sync_to_async
 from bot.helper.ext_utils.files_utils import (
     get_base_name,
     is_archive,
@@ -527,7 +527,7 @@ class TelegramUploader:
             if ss_thumb:
                 file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
                 ss = imgclient.upload(file=f"{ss_thumb}", name=file_name)
-                file_size = get_size_bytes(cpy_msg.video.file_size)  
+                file_size = humanbytes(cpy_msg.video.file_size)  
                 tg_document = {
                             "file_id": cpy_msg.id,
                             "file_name": file_name,

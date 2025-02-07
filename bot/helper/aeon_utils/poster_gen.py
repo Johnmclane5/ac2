@@ -95,3 +95,15 @@ async def get_movie_poster(movie_name, release_year):
         print(f"Error fetching TMDB data: {e}")
     return None
 
+def humanbytes(size):
+    # Function to format file size in a human-readable format
+    if not size:
+        return "0 B"
+    # Define byte sizes
+    suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+    i = 0
+    while size >= 1024 and i < len(suffixes) - 1:
+        size /= 1024
+        i += 1
+    f = ('%.2f' % size).rstrip('0').rstrip('.')
+    return f"{f} {suffixes[i]}"
