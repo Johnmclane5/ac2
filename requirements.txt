@@ -45,3 +45,4 @@ tgcrypto
 xattr
 yt-dlp[default,curl-cffi]
 markdown2
+imgbbpy

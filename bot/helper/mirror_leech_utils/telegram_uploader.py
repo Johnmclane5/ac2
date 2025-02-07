@@ -1,4 +1,5 @@
 import contextlib
+import imgbbpy
 from asyncio import sleep
 from logging import getLogger
 from os import path as ospath
@@ -36,7 +37,7 @@ from bot.core.aeon_client import TgClient
 from bot.core.config_manager import Config
 from bot.helper.aeon_utils.poster_gen import get_movie_poster, extract_movie_info, download_image_url
 from bot.helper.aeon_utils.caption_gen import generate_caption
-from bot.helper.ext_utils.bot_utils import sync_to_async
+from bot.helper.ext_utils.bot_utils import sync_to_async, get_size_bytes
 from bot.helper.ext_utils.files_utils import (
     get_base_name,
     is_archive,
@@ -51,9 +52,16 @@ from bot.helper.ext_utils.media_utils import (
 from bot.helper.telegram_helper.message_utils import delete_message
 from bot.helper.telegram_helper.button_build import ButtonMaker
 from urllib.parse import quote
+from motor.motor_asyncio import AsyncIOMotorClient 
 
 LOGGER = getLogger(__name__)
+# Initialize MongoDB client
+MONGO_COLLECTION = "users"
 
+mongo_client = AsyncIOMotorClient(Config.MONGO_URI)  
+db = mongo_client['file_inf']
+collection = db['details']
+imgclient = imgbbpy.SyncClient(Config.IMGBB_API_KEY)
 
 class TelegramUploader:
     def __init__(self, listener, path, source_link):
@@ -404,6 +412,7 @@ class TelegramUploader:
         self._is_corrupted = False
         try:
             is_video, is_audio, is_image = await get_document_type(self._up_path)
+            ss_thumb = None
 
             movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
             if Config.TMDB_API_KEY:
@@ -466,14 +475,7 @@ class TelegramUploader:
                     return None
                 if thumb == "none":
                     thumb = None
-                if Config.SCREENSHOT_CHAT:
-                    new_mono = re_sub(r'\.mkv|\.mp4|\.webm', '', cap_mono)
-                    await self._listener.client.send_photo(
-                            chat_id=int(Config.SCREENSHOT_CHAT),
-                            photo=ss_thumb,
-                            caption=new_mono,
-                            disable_notification=True,
-                        )
+                    
                 self._sent_msg = await self._sent_msg.reply_video(
                     video=self._up_path,
                     quote=True,
@@ -521,7 +523,22 @@ class TelegramUploader:
                 #button = buttons.build_menu(2)
             #else:
                 #button = None
-            await self._copy_message()
+
+            cpy_msg = await self._copy_message()
+
+            if ss_thumb:
+                file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
+                ss = imgclient.upload(file=f"{ss_thumb}", name=file_name)
+                file_size = get_size_bytes(cpy_msg.video.file_size)  
+                tg_document = {
+                            "file_id": cpy_msg.id,
+                            "file_name": file_name,
+                            "file_size": file_size,
+                            "timestamp": cpy_msg.video.date,
+                            "thumb_url": ss.url
+                        } 
+                 
+                await collection.insert_one(tg_document)
             
             if (
                 not self._listener.is_cancelled
@@ -586,8 +603,8 @@ class TelegramUploader:
                         self._sent_msg.id,
                     )
                     if msg and msg.video:
-                        await msg.copy(target)
-                    return
+                        cpy_msg = await msg.copy(target)
+                    return cpy_msg
                 except Exception as e:
                     LOGGER.error(f"Attempt {attempt + 1} failed: {e} {msg.id}")
                     if attempt < retries - 1:

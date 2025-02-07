@@ -21,6 +21,7 @@ class Config:
     INCOMPLETE_TASK_NOTIFIER = False
     INDEX_URL = ""
     IS_TEAM_DRIVE = False
+    IMGBB_API_KEY = ""
     LEECH_DUMP_CHAT = ""
     SCREENSHOT_CHAT = ""
     LEECH_FILENAME_PREFIX = ""
@@ -29,6 +30,7 @@ class Config:
     MIXED_LEECH = False
     MEGA_EMAIL = ""
     MEGA_PASSWORD = ""
+    MONGO_URI = ""
     NAME_SUBSTITUTE = ""
     OWNER_ID = 0
     QUEUE_ALL = 0

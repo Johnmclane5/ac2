@@ -94,3 +94,4 @@ async def get_movie_poster(movie_name, release_year):
     except Exception as e:
         print(f"Error fetching TMDB data: {e}")
     return None
+
