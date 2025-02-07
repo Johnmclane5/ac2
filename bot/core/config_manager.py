@@ -23,7 +23,6 @@ class Config:
     IS_TEAM_DRIVE = False
     IMGBB_API_KEY = ""
     LEECH_DUMP_CHAT = ""
-    SCREENSHOT_CHAT = ""
     LEECH_FILENAME_PREFIX = ""
     LEECH_SPLIT_SIZE = 2097152000
     MEDIA_GROUP = False
