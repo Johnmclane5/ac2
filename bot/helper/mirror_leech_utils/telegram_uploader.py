@@ -541,7 +541,7 @@ class TelegramUploader:
                  
                     await collection.insert_one(tg_document)
                 else:
-                    await self._listener.client.send_message(config.OWNER_ID, text=f"File Already Added {file_name}")
+                    await self._listener.client.send_message(Config.OWNER_ID, text=f"File Already Added {file_name}")
             
             if (
                 not self._listener.is_cancelled
