@@ -56,7 +56,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 LOGGER = getLogger(__name__)
 # Initialize MongoDB client
-MONGO_COLLECTION = "users"
 
 mongo_client = AsyncIOMotorClient(Config.MONGO_URI)  
 db = mongo_client['file_inf']
@@ -525,7 +524,6 @@ class TelegramUploader:
                 #button = None
 
             cpy_msg = await self._copy_message()
-
             if ss_thumb:
                 file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
                 ss = imgclient.upload(file=f"{ss_thumb}", name=file_name)
@@ -618,7 +616,8 @@ class TelegramUploader:
 
         if self._user_dump:
             with contextlib.suppress(Exception):
-                await _copy(int(self._user_dump))
+                cpy_msg = await _copy(int(self._user_dump))
+                return cpy_msg
 
     @property
     def speed(self):
