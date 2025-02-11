@@ -524,7 +524,7 @@ class TelegramUploader:
                 #button = None
 
             cpy_msg = await self._copy_message()
-            if self._listener.thumbnail_layout:
+            if self._listener.thumbnail_layout and cpy_msg is not None:
                 file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
                 existing_document = await collection.find_one({"file_name": file_name})
                 if not existing_document:
