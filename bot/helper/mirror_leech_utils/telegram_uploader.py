@@ -599,6 +599,7 @@ class TelegramUploader:
         await sleep(1)
 
         async def _copy(target, retries=3):
+            cpy_msg = None
             for attempt in range(retries):
                 try:
                     msg = await TgClient.bot.get_messages(
@@ -613,6 +614,7 @@ class TelegramUploader:
                     if attempt < retries - 1:
                         await sleep(0.5)
             LOGGER.error(f"Failed to copy message after {retries} attempts")
+            return cpy_msg
 
         # TODO if self.dm_mode:
         # if self._sent_msg.chat.id != self._user_id:
