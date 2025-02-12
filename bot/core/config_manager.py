@@ -7,6 +7,7 @@ class Config:
     AS_DOCUMENT = False
     AUTHORIZED_CHATS = ""
     BASE_URL = ""
+    BOT_USERNAME = ""
     BASE_URL_PORT = 80
     BOT_TOKEN = ""
     CMD_SUFFIX = ""
@@ -23,6 +24,7 @@ class Config:
     IS_TEAM_DRIVE = False
     IMGBB_API_KEY = ""
     LEECH_DUMP_CHAT = ""
+    SS_CHAT = ""
     LEECH_FILENAME_PREFIX = ""
     LEECH_SPLIT_SIZE = 2097152000
     MEDIA_GROUP = False
