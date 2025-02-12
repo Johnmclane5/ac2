@@ -535,7 +535,7 @@ class TelegramUploader:
                 button = buttons.build_menu(2)
                 await self._listener.client.send_photo(
                     int(Config.SS_CHAT),
-                    photo=thumb,
+                    photo=ss_thumb,
                     caption=info,
                     reply_markup=button
                     )
