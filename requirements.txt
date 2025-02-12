@@ -11,7 +11,7 @@ cinemagoer
 cloudscraper
 config
 dnspython
-pyrofork
+pyrofork==2.2.11
 feedparser
 flask
 gevent
