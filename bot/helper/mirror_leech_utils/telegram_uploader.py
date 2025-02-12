@@ -525,7 +525,7 @@ class TelegramUploader:
 
             cpy_msg = await self._copy_message()
 
-            if self._listener.thumbnail_layout and cpy_msg is not None:
+            if Config.SS_CHAT and cpy_msg is not None:
                 buttons = ButtonMaker()
                 file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
                 file_size = humanbytes(cpy_msg.video.file_size) 
@@ -535,7 +535,7 @@ class TelegramUploader:
                 button = buttons.build_menu(2)
                 await self._listener.client.send_photo(
                     Config.SS_CHAT,
-                    photo=ss_thumb,
+                    photo=thumb,
                     caption=info,
                     reply_markup=button
                     )
