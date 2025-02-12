@@ -524,25 +524,22 @@ class TelegramUploader:
                 #button = None
 
             cpy_msg = await self._copy_message()
+
             if self._listener.thumbnail_layout and cpy_msg is not None:
+                buttons = ButtonMaker()
                 file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
-                existing_document = await collection.find_one({"file_name": file_name})
-                if not existing_document:
-                    ss = imgclient.upload(file=f"{ss_thumb}", name=file_name)
-                    file_size = humanbytes(cpy_msg.video.file_size) 
-                    
-                    tg_document = {
-                                    "file_id": cpy_msg.id,
-                                    "file_name": file_name,
-                                    "file_size": file_size,
-                                    "timestamp": cpy_msg.video.date,
-                                    "thumb_url": ss.url
-                                  } 
-                 
-                    await collection.insert_one(tg_document)
-                else:
-                    await self._listener.client.send_message(Config.OWNER_ID, text=f"File Already Added {file_name}")
-            
+                file_size = humanbytes(cpy_msg.video.file_size) 
+                info = f"<blockquote expandable><b>{file_name}</b></blockquote>\n<blockquote><b>{file_size}</b></blockquote>"                 
+                url=f"https://telegram.dog/{Config.BOT_USERNAME}?start={cpy_msg.id}"
+                buttons.url_button("Send in DM", url)
+                button = buttons.build_menu(2)
+                await self._listener.client.send_photo(
+                    Config.SS_CHAT,
+                    photo=ss_thumb,
+                    caption=info,
+                    reply_markup=button
+                    )
+
             if (
                 not self._listener.is_cancelled
                 and self._media_group
