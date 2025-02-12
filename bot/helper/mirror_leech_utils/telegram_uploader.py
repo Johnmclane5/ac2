@@ -534,7 +534,7 @@ class TelegramUploader:
                 buttons.url_button("Send in DM", url)
                 button = buttons.build_menu(2)
                 await self._listener.client.send_photo(
-                    Config.SS_CHAT,
+                    int(Config.SS_CHAT),
                     photo=thumb,
                     caption=info,
                     reply_markup=button
