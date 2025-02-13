@@ -523,22 +523,7 @@ class TelegramUploader:
             #else:
                 #button = None
 
-            cpy_msg = await self._copy_message()
-
-            if Config.SS_CHAT and cpy_msg is not None:
-                buttons = ButtonMaker()
-                file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
-                file_size = humanbytes(cpy_msg.video.file_size) 
-                info = f"<blockquote expandable><b>{file_name}</b></blockquote>\n<blockquote><b>{file_size}</b></blockquote>"                 
-                url=f"https://telegram.dog/{Config.BOT_USERNAME}?start={cpy_msg.id}"
-                buttons.url_button("Send in DM", url)
-                button = buttons.build_menu(2)
-                await self._listener.client.send_photo(
-                    int(Config.SS_CHAT),
-                    photo=thumb,
-                    caption=info,
-                    reply_markup=button
-                    )
+            await self._copy_message()
 
             if (
                 not self._listener.is_cancelled
@@ -596,7 +581,6 @@ class TelegramUploader:
         await sleep(1)
 
         async def _copy(target, retries=3):
-            cpy_msg = None
             for attempt in range(retries):
                 try:
                     msg = await TgClient.bot.get_messages(
@@ -604,14 +588,13 @@ class TelegramUploader:
                         self._sent_msg.id,
                     )
                     if msg and msg.video:
-                        cpy_msg = await msg.copy(target)
-                    return cpy_msg
+                        await msg.copy(target)
+                    return
                 except Exception as e:
                     LOGGER.error(f"Attempt {attempt + 1} failed: {e} {msg.id}")
                     if attempt < retries - 1:
                         await sleep(0.5)
             LOGGER.error(f"Failed to copy message after {retries} attempts")
-            return cpy_msg
 
         # TODO if self.dm_mode:
         # if self._sent_msg.chat.id != self._user_id:
@@ -621,7 +604,6 @@ class TelegramUploader:
         if self._user_dump:
             with contextlib.suppress(Exception):
                 cpy_msg = await _copy(int(self._user_dump))
-                return cpy_msg
 
     @property
     def speed(self):
