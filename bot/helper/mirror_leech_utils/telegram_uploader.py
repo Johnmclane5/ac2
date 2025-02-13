@@ -453,7 +453,7 @@ class TelegramUploader:
                 key = "videos"
                 duration = (await get_media_info(self._up_path))[0]
                 if self._listener.thumbnail_layout:
-                    ss_thumb = await get_multiple_frames_thumbnail(
+                    thumb = await get_multiple_frames_thumbnail(
                         self._up_path,
                         self._listener.thumbnail_layout,
                         self._listener.screen_shots,
