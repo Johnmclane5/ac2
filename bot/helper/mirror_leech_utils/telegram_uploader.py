@@ -58,7 +58,7 @@ LOGGER = getLogger(__name__)
 # Initialize MongoDB client
 
 mongo_client = AsyncIOMotorClient(Config.MONGO_URI)  
-db = mongo_client['file_inf']
+db = mongo_client['f_info']
 collection = db['details']
 imgclient = imgbbpy.SyncClient(Config.IMGBB_API_KEY)
 
