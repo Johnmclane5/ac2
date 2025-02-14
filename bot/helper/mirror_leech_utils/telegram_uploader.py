@@ -414,7 +414,8 @@ class TelegramUploader:
             ss_thumb = None
 
             movie_name, release_year = await extract_movie_info(ospath.splitext(file)[0])
-            existing_document = await collection.find_one({"file_name": ospath.splitext(file)[0]})
+            f_name = re_sub(r'\.mkv|\.mp4|\.webm', '', ospath.splitext(file)[0])
+            existing_document = await collection.find_one({"file_name": f_name})
             if existing_document:
                 return None
             if Config.TMDB_API_KEY:
@@ -529,22 +530,20 @@ class TelegramUploader:
             cpy_msg = await self._copy_message()
             if self._listener.thumbnail_layout and cpy_msg is not None:
                 file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
-                existing_document = await collection.find_one({"file_name": file_name})
-                if not existing_document:
-                    ss = imgclient.upload(file=f"{ss_thumb}", name=file_name)
-                    file_size = humanbytes(cpy_msg.video.file_size) 
+                ss = imgclient.upload(file=f"{ss_thumb}", name=file_name)
+                file_size = humanbytes(cpy_msg.video.file_size) 
                     
-                    tg_document = {
-                                    "file_id": cpy_msg.id,
-                                    "file_name": file_name,
-                                    "file_size": file_size,
-                                    "timestamp": cpy_msg.video.date,
-                                    "thumb_url": ss.url
-                                  } 
+                tg_document = {
+                    "file_id": cpy_msg.id,
+                    "file_name": file_name,
+                    "file_size": file_size,
+                    "timestamp": cpy_msg.video.date,
+                    "thumb_url": ss.url
+                } 
                  
-                    await collection.insert_one(tg_document)
-                else:
-                    await self._listener.client.send_message(Config.OWNER_ID, text=f"File Already Added {file_name}")
+                await collection.insert_one(tg_document)
+            else:
+                await self._listener.client.send_message(Config.OWNER_ID, text=f"File Already Added {file_name}")
             
             if (
                 not self._listener.is_cancelled
