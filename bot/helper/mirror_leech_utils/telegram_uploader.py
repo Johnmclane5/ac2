@@ -453,7 +453,7 @@ class TelegramUploader:
                 key = "videos"
                 duration = (await get_media_info(self._up_path))[0]
                 if self._listener.thumbnail_layout:
-                    thumb = await get_multiple_frames_thumbnail(
+                    ss_thumb = await get_multiple_frames_thumbnail(
                         self._up_path,
                         self._listener.thumbnail_layout,
                         self._listener.screen_shots,
@@ -523,8 +523,26 @@ class TelegramUploader:
             #else:
                 #button = None
 
-            await self._copy_message()
-
+            cpy_msg = await self._copy_message()
+            if self._listener.thumbnail_layout and cpy_msg is not None:
+                file_name = re_sub(r'\.mkv|\.mp4|\.webm', '', cpy_msg.caption)
+                existing_document = await collection.find_one({"file_name": file_name})
+                if not existing_document:
+                    ss = imgclient.upload(file=f"{ss_thumb}", name=file_name)
+                    file_size = humanbytes(cpy_msg.video.file_size) 
+                    
+                    tg_document = {
+                                    "file_id": cpy_msg.id,
+                                    "file_name": file_name,
+                                    "file_size": file_size,
+                                    "timestamp": cpy_msg.video.date,
+                                    "thumb_url": ss.url
+                                  } 
+                 
+                    await collection.insert_one(tg_document)
+                else:
+                    await self._listener.client.send_message(Config.OWNER_ID, text=f"File Already Added {file_name}")
+            
             if (
                 not self._listener.is_cancelled
                 and self._media_group
@@ -581,6 +599,7 @@ class TelegramUploader:
         await sleep(1)
 
         async def _copy(target, retries=3):
+            cpy_msg = None
             for attempt in range(retries):
                 try:
                     msg = await TgClient.bot.get_messages(
@@ -588,13 +607,14 @@ class TelegramUploader:
                         self._sent_msg.id,
                     )
                     if msg and msg.video:
-                        await msg.copy(target)
-                    return
+                        cpy_msg = await msg.copy(target)
+                    return cpy_msg
                 except Exception as e:
                     LOGGER.error(f"Attempt {attempt + 1} failed: {e} {msg.id}")
                     if attempt < retries - 1:
                         await sleep(0.5)
             LOGGER.error(f"Failed to copy message after {retries} attempts")
+            return cpy_msg
 
         # TODO if self.dm_mode:
         # if self._sent_msg.chat.id != self._user_id:
@@ -604,6 +624,7 @@ class TelegramUploader:
         if self._user_dump:
             with contextlib.suppress(Exception):
                 cpy_msg = await _copy(int(self._user_dump))
+                return cpy_msg
 
     @property
     def speed(self):
