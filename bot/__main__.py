@@ -135,7 +135,7 @@ async def main():
         ),
     )
     LOGGER.info("Bot Started!")
-    signal(SIGINT, exit_clean_up)
+    signal(SIGINT, sync_to_async(exit_clean_up))
 
 
 # Run Bot
